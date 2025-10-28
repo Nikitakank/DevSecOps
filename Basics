@@ -1,0 +1,59 @@
+DevSecOps = Development + Security + Operations
+Build software fast like DevOps — but also build it securely at every step
+Breaking it down:
+| Part                  | Meaning                               | Example                                             |
+| --------------------- | ------------------------------------- | --------------------------------------------------- |
+| **Dev (Development)** | Writing code, building apps           | A developer writes code for a web app               |
+| **Sec (Security)**    | Keeping everything safe and protected | Checking the code for security bugs or secret leaks |
+| **Ops (Operations)**  | Running and maintaining apps          | Deploying the app to servers, monitoring it         |
+
+Goals and Objectives
+The DevSecOps vision is to enable the rapid release of trusted business applications with
+• Defined effective and approved DevOps processes
+• Reduced overall time to receive an initial Authorization to Operate (ATO)
+• Continuous security data available Sprint-to-Sprint to maintain an ATO
+• Automated security scanning, monitoring, testing and artifact generation
+• Security and privacy risks and issues identified and resolved early in development
+
+Benefits of DevSecOps
+• Built-In Security and Privacy. DevSecOps encourages Business Owners to satisfy 
+security and privacy requirements as part of their daily DevOps pipeline. 
+• ATO Ready. This integrated process rapidly delivers a more secure solution that satisfies 
+many of the criteria needed to receive an ATO during development rather than at the end 
+of development. 
+• Automation. Use of automation eliminates manual tasks, frees staff to work on unique 
+problems, and can reduce the total pipeline time to deliver a trusted solution. Examples of 
+areas for automation include security scanning, monitoring, and testing. 
+• Issues Addressed Earlier. Identifying and removing security and privacy risks and 
+issues earlier saves resources and time.
+
+raditional Way (Before DevSecOps)
+Developer writes code → 
+Operations deploys → 
+Security checks happen after everything is done → ❌ (too late!)
+If something is unsafe, they find it after deployment. That wastes time and money.
+DevSecOps Way
+Developer writes code
+Security tools automatically scan the code
+During CI/CD pipeline
+Tools check for security issues (vulnerable libraries, open ports, secrets, etc.)
+When deployed
+Monitoring tools continuously check for threats
+
+Security is built-in from the start to the end.
+
+Simple Real-Life Example
+
+Imagine you’re baking a cake 
+DevOps: Make the cake fast and deliver it quickly.
+DevSecOps: Make the cake fast but also make sure it’s safe to eat — check ingredients, oven temperature, hygiene — at every step.
+So DevSecOps = speed + safety together.
+
+| Stage                         | Purpose                               | Example Tools                  |
+| ----------------------------- | ------------------------------------- | ------------------------------ |
+| **Code Scanning (SAST)**      | Check code for bugs & vulnerabilities | SonarQube, Checkmarx           |
+| **Dependency Scanning (SCA)** | Check for insecure libraries          | OWASP Dependency-Check         |
+| **Container Scanning**        | Check Docker images                   | Trivy, Clair                   |
+| **Secrets Scanning**          | Find passwords/API keys in code       | GitGuardian                    |
+| **Infrastructure Security**   | Check Terraform/AWS configs           | Checkov, Terrascan             |
+| **Continuous Monitoring**     | Watch for runtime threats             | AWS GuardDuty, Prometheus, ELK |
