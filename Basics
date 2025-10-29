@@ -30,7 +30,7 @@ issues earlier saves resources and time.
 raditional Way (Before DevSecOps)
 Developer writes code → 
 Operations deploys → 
-Security checks happen after everything is done → ❌ (too late!)
+Security checks happen after everything is done →  (too late!)
 If something is unsafe, they find it after deployment. That wastes time and money.
 DevSecOps Way
 Developer writes code
