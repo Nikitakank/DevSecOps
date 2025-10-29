@@ -1,0 +1,59 @@
+git init = Initialize a new local Git repository 
+git clone <repo-url> = Clone a remote repository              
+git status  = Show the status of changes            
+git add <file>  = Add a specific file to staging          
+git add . = Add all files to staging          
+git commit -m "message" = Commit changes with a message
+git log =Show commit history                     
+git diff = Show unstaged changes                   
+git diff --staged  =Show staged changes                     
+git rm <file> = Remove a file from the repo and staging 
+git mv <old> <new>= Rename or move a file                   
+
+git branch= List all branches                   
+git branch <branch-name>= Create a new branch                 
+git checkout <branch-name>=Switch to another branch            
+git checkout -b <branch-name>= Create and switch to a new branch   
+git merge <branch-name>= Merge a branch into the current one 
+git branch -d <branch-name>= Delete a branch                     
+git branch -M main= Rename current branch to “main”     
+
+git remote -v= Show remote URLs                 
+git remote add origin <url>=Add a remote repo                
+git push -u origin <branch>=Push branch to remote first time 
+git push=Push commits to remote           
+git pull= Fetch and merge from remote      
+git fetch=Fetch changes without merging    
+git clone <url>=Clone a remote repo to local     
+git remote remove origin=Remove a remote repo     
+
+git restore <file>=Undo changes in a file (not staged)             
+git restore --staged <file>=Unstage a file                                  
+git reset <commit-id>= Undo commits (soft reset)                       
+git reset --hard <commit-id>=Completely reset to a previous commit           
+git revert <commit-id>=Create a new commit that undoes an older commit 
+
+git stash=Temporarily save changes    
+git stash list=List all stashes            
+git stash apply= Apply last stash            
+git stash pop= Apply and remove last stash 
+git stash drop= Delete a stash              
+
+git tag =List all tags           
+git tag <tag-name>= Create a tag         
+git tag -a <tag-name> -m "message"= Create an annotated tag 
+git push origin <tag-name>= Push tag to remote     
+git push origin --tags= Push all tags           
+
+git log --oneline = Show compact commit log              
+git log --graph --oneline --all = Show branch graph                    
+git show <commit-id>= Show details of a commit             
+git blame <file>= Show who changed each line in a file 
+
+
+
+
+
+
+
+
