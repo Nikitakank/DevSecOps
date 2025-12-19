@@ -1,14 +1,21 @@
 pipeline {
     agent any
 
+    environment {
+        GIT_REPO = 'https://github.com/Nikitakank/DevSecOps'
+        GIT_CRED = 'git-creds'
+        SSH_CRED = 'technohertz-creds'
+        SERVER_HOST = '148.72.215.184'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
                 echo "Checking out code from GitHub..."
                 git(
-                    url: 'https://github.com/Nikitakank/DevSecOps',
+                    url: "${GIT_REPO}",
                     branch: 'main',
-                    credentialsId: 'git-creds'
+                    credentialsId: "${GIT_CRED}"
                 )
             }
         }
@@ -16,17 +23,15 @@ pipeline {
         stage('Deploy WAR on Server') {
             steps {
                 echo "Triggering deploy_demo.sh on Technohertz server..."
-                
-                // SSH execution using credentials stored in Jenkins
+
                 sshCommand remote: [
-                    name: "TechnohertzServer",
-                    host: "148.72.215.184",
+                    host: "technohertz",
                     credentialsId: "technohertz-creds",
                     allowAnyHosts: true
                 ], command: """
                     set -e
                     echo "Running deploy_demo.sh on server..."
-                    bash /home/technohertz/War/Demo/deploy_demo.sh nikitakank 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
+                    bash /home/technohertz/War/Demo/deploy_demo.sh nikitakank  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
                 """
             }
         }
