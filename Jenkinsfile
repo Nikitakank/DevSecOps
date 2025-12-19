@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         SERVER_HOST = "148.72.215.184"               // Your server IP
-        SSH_CRED = "technohertz-creds"              // Jenkins global credentials ID
+        SSH_CRED = "technohertz-creds"              // SSH credential for server
+        GIT_CRED = "git-creds"                      // Git credential for GitHub
         REPO_URL = "https://github.com/Nikitakank/DevSecOps"
         BRANCH = "main"
     }
@@ -17,7 +18,7 @@ pipeline {
                     branches: [[name: "*/${BRANCH}"]],
                     userRemoteConfigs: [[
                         url: "${REPO_URL}",
-                        credentialsId: "${SSH_CRED}"
+                        credentialsId: "${GIT_CRED}"   // <-- Git credential here
                     ]]
                 ])
             }
@@ -27,9 +28,10 @@ pipeline {
             steps {
                 echo "Triggering deploy_demo.sh on Technohertz server..."
                 sshCommand remote: [
+                    name: "TechnohertzServer",       // Required by SSH plugin
                     host: "${SERVER_HOST}",
-                    user: "technohertz",           // <-- SSH username added
-                    credentialsId: "${SSH_CRED}",
+                    user: "technohertz",             // SSH username
+                    credentialsId: "${SSH_CRED}",    // SSH credential here
                     allowAnyHosts: true
                 ], command: """
                     set -e
