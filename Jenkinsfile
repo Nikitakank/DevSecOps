@@ -2,55 +2,43 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME = "DevSecOps"
+        GIT_CRED_ID = 'git-creds'        // Your Git credentials ID
+        SERVER_USER = 'technohertz'      // Server username
+        SERVER_PASS = 'AJSEQCp#wv6%' // Server password credential ID in Jenkins
+        SERVER_HOST = '148.72.215.184'   // Server IP
+        REMOTE_PATH = '/home/technohertz/War/Demo/deploy_demo.sh' // Deploy script path
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Nikitakank/DevSecOps',
-                    credentialsId: 'github-creds'
+                echo "Checking out code from GitHub..."
+                git branch: 'main', url: 'https://github.com/Nikitakank/DevSecOps', credentialsId: "${GIT_CRED_ID}"
             }
         }
 
         stage('Deploy WAR on Server') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'technohertz-creds',
-                        usernameVariable: 'SSH_USER',
-                        passwordVariable: 'SSH_PASS'
-                    )
-                ]) {
-                    script {
-                        // Define remote server properly
-                        def remote = [
-                            name: 'technohertz',
-                            host: '148.72.215.184',
-                            user: SSH_USER,
-                            password: SSH_PASS,
-                            allowAnyHosts: true
-                        ]
+                echo "Starting deployment on ${SERVER_HOST}..."
 
-                        echo "Starting deployment on ${remote.host}..."
-
-                        // Execute deploy script on remote server
-                        sshCommand remote: remote, command: """
-                            set -e
-                            bash /home/technohertz/War/Demo/deploy_demo.sh ${APP_NAME}
-                        """
-
-                        echo "Deployment completed successfully."
-                    }
+                withCredentials([usernamePassword(credentialsId: "${SERVER_PASS}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    sshCommand remote: [
+                        host: "${SERVER_HOST}",
+                        user: "${SERVER_USER}",
+                        password: "${PASSWORD}",
+                        allowAnyHosts: true
+                    ], command: "bash ${REMOTE_PATH} DevSecOps"
                 }
             }
         }
     }
 
     post {
+        success {
+            echo "Deployment completed successfully!"
+        }
         failure {
-            echo "Deployment failed. Check server logs."
+            echo "Deployment failed. Check server logs!"
         }
     }
 }
