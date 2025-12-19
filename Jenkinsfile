@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Nikitakank/DevSecOps',
@@ -18,34 +18,37 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'technohertz-creds', 
-                        usernameVariable: 'SSH_USER', 
+                        credentialsId: 'technohertz-creds',
+                        usernameVariable: 'SSH_USER',
                         passwordVariable: 'SSH_PASS'
-                    ),
-                    usernamePassword(
-                        credentialsId: 'github-creds', 
-                        usernameVariable: 'GIT_USER', 
-                        passwordVariable: 'GIT_TOKEN'
                     )
                 ]) {
-                    sshCommand remote: [
-                        host: '148.72.215.184',
-                        user: SSH_USER,
-                        password: SSH_PASS,
-                        allowAnyHosts: true
-                    ], command: """
-                        set -e
-                        bash /home/technohertz/War/Demo/deploy_demo.sh ${APP_NAME} ${GIT_TOKEN}
-                    """
+                    script {
+                        // Define remote server properly
+                        def remote = [
+                            name: 'technohertz',
+                            host: '148.72.215.184',
+                            user: SSH_USER,
+                            password: SSH_PASS,
+                            allowAnyHosts: true
+                        ]
+
+                        echo "Starting deployment on ${remote.host}..."
+
+                        // Execute deploy script on remote server
+                        sshCommand remote: remote, command: """
+                            set -e
+                            bash /home/technohertz/War/Demo/deploy_demo.sh ${APP_NAME}
+                        """
+
+                        echo "Deployment completed successfully."
+                    }
                 }
             }
         }
     }
 
     post {
-        success {
-            echo "Deployment completed successfully."
-        }
         failure {
             echo "Deployment failed. Check server logs."
         }
