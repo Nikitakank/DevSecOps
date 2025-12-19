@@ -27,8 +27,8 @@ pipeline {
             steps {
                 echo "Triggering deploy_demo.sh on Technohertz server..."
                 sshCommand remote: [
-                    name: "TechnohertzServer",         // Required by SSH plugin
                     host: "${SERVER_HOST}",
+                    user: "technohertz",           // <-- SSH username added
                     credentialsId: "${SSH_CRED}",
                     allowAnyHosts: true
                 ], command: """
@@ -42,10 +42,10 @@ pipeline {
 
     post {
         success {
-            echo " WAR deployment SUCCESSFUL!"
+            echo "WAR deployment SUCCESSFUL!"
         }
         failure {
-            echo " WAR deployment FAILED — check server logs."
+            echo "WAR deployment FAILED — check server logs."
         }
     }
 }
