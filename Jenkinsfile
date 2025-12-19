@@ -16,10 +16,11 @@ pipeline {
                 echo 'Starting deployment on 148.72.215.184...'
                 withCredentials([usernamePassword(
                     credentialsId: 'technohertz-creds', 
-                    usernameVariable: 'USERNAME', 
-                    passwordVariable: 'PASSWORD')]) {
+                    usernameVariable: 'technohertz', 
+                    passwordVariable: 'AJSEQCp#wv6%')]) {
                     
                     sshCommand remote: [
+                        name: 'technohertz-server',  // REQUIRED
                         host: '148.72.215.184',
                         user: "${USERNAME}",
                         password: "${PASSWORD}",
