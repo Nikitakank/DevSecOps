@@ -2,30 +2,35 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
+        stage('Build WAR on Server') {
             steps {
-                echo 'Checking out code from GitHub...'
-                git branch: 'main',
-                    url: 'https://github.com/Nikitakank/DevSecOps',
-                    credentialsId: 'git-creds'
-            }
-        }
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'git-creds',
+                        usernameVariable: 'git_USER',
+                        passwordVariable: 'git_PASS'
+                    ),
+                    usernamePassword(
+                        credentialsId: 'technohertz-creds',
+                        usernameVariable: 'SSH_USER',
+                        passwordVariable: 'SSH_PASS',
+                    )
+                ]) {
+                    script {
+                        echo "Triggering deploy_demo.sh on Technohertz server..."
 
-        stage('Deploy WAR on Server') {
-            steps {
-                echo 'Starting deployment on 148.72.215.184...'
-                withCredentials([usernamePassword(
-                    credentialsId: 'technohertz-creds', 
-                    usernameVariable: 'technohertz', 
-                    passwordVariable: 'AJSEQCp#wv6%')]) {
-                    
-                    sshCommand remote: [
-                        name: 'technohertz-server',  // REQUIRED
-                        host: '148.72.215.184',
-                        user: "${USERNAME}",
-                        password: "${PASSWORD}",
-                        allowAnyHosts: true
-                    ], command: "bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps"
+                        sshCommand remote: [
+                            name: "TechnohertzServer",
+                            host: "148.72.215.184",
+                            user: "technohertz",     // ← FIXED
+                            password: SSH_PASS,       // password from credentials
+                            allowAnyHosts: true
+                        ], command: """
+                            set -e
+                            echo "Running deploy_demo.sh on server..."
+                            bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps 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
+                        """
+                    }
                 }
             }
         }
@@ -33,10 +38,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment completed successfully!'
+            echo "WAR build & copy finished on server."
         }
         failure {
-            echo 'Deployment failed. Check server logs!'
+            echo "WAR build FAILED — check server logs."
         }
     }
 }
