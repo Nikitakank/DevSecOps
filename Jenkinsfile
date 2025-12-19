@@ -5,31 +5,26 @@ pipeline {
         stage('Deploy WAR on Server') {
             steps {
                 withCredentials([
-                    usernamePassword(
-                        credentialsId: 'github-creds',
-                        usernameVariable: 'GIT_USER',
-                        passwordVariable: 'GIT_TOKEN'
-                    ),
+                    string(credentialsId: 'github-creds', variable: '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'),
                     usernamePassword(
                         credentialsId: 'technohertz-creds',
                         usernameVariable: 'SSH_USER',
                         passwordVariable: 'SSH_PASS'
                     )
                 ]) {
-                    script {
-                        echo "Starting remote deployment..."
-
-                        sshCommand remote: [
-                            name: "TechnohertzServer",
-                            host: "148.72.215.184",
+                    sshCommand(
+                        remote: [
+                            host: '148.72.215.184',
                             user: SSH_USER,
                             password: SSH_PASS,
                             allowAnyHosts: true
-                        ], command: """
+                        ],
+                        command: """
                             set -e
-                            bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps "$GIT_USER" "$GIT_TOKEN"
+                            echo "Starting deployment..."
+                            bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps ${GIT_TOKEN}
                         """
-                    }
+                    )
                 }
             }
         }
@@ -37,11 +32,10 @@ pipeline {
 
     post {
         success {
-            echo "Deployment completed successfully."
+            echo "Deployment completed successfully"
         }
         failure {
             echo "Deployment failed. Check server logs."
         }
     }
 }
-
