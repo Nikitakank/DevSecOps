@@ -2,31 +2,34 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'https://github.com/Nikitakank/DevSecOps'
-        GIT_CRED = 'git-creds'
-        SSH_CRED = 'technohertz-creds'
-        SERVER_HOST = '148.72.215.184'
+        SERVER_HOST = "148.72.215.184"               // Your server IP
+        SSH_CRED = "technohertz-creds"              // Jenkins global credentials ID
+        REPO_URL = "https://github.com/Nikitakank/DevSecOps"
+        BRANCH = "main"
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout SCM') {
             steps {
                 echo "Checking out code from GitHub..."
-                git(
-                    url: "${GIT_REPO}",
-                    branch: 'main',
-                    credentialsId: "${GIT_CRED}"
-                )
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: "${REPO_URL}",
+                        credentialsId: "${SSH_CRED}"
+                    ]]
+                ])
             }
         }
 
         stage('Deploy WAR on Server') {
             steps {
                 echo "Triggering deploy_demo.sh on Technohertz server..."
-
                 sshCommand remote: [
-                    host: "technohertz",
-                    credentialsId: "technohertz-creds",
+                    name: "TechnohertzServer",         // Required by SSH plugin
+                    host: "${SERVER_HOST}",
+                    credentialsId: "${SSH_CRED}",
                     allowAnyHosts: true
                 ], command: """
                     set -e
@@ -39,10 +42,10 @@ pipeline {
 
     post {
         success {
-            echo "WAR build & deployment finished successfully on server."
+            echo " WAR deployment SUCCESSFUL!"
         }
         failure {
-            echo "WAR build FAILED — check server logs."
+            echo " WAR deployment FAILED — check server logs."
         }
     }
 }
