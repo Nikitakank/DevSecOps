@@ -31,7 +31,7 @@ pipeline {
                 ], command: """
                     set -e
                     echo "Running deploy_demo.sh on server..."
-                    bash /home/technohertz/War/Demo/deploy_demo.sh nikitakank  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
+                    bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps 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
                 """
             }
         }
