@@ -2,36 +2,27 @@ pipeline {
     agent any
 
     stages {
-        stage('Build WAR on Server') {
+        stage('Checkout Code') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'git-creds',
-                        usernameVariable: 'git_USER',
-                        passwordVariable: 'git_PASS'
-                    ),
-                    usernamePassword(
-                        credentialsId: 'technohertz-creds',
-                        usernameVariable: 'SSH_USER',
-                        passwordVariable: 'SSH_PASS',
-                    )
-                ]) {
-                    script {
-                        echo "Triggering deploy_demo.sh on Technohertz server..."
+                git branch: 'main',
+                    url: 'https://github.com/Nikitakank/DevSecOps',
+                    credentialsId: 'git-creds'
+            }
+        }
 
-                        sshCommand remote: [
-                            name: "TechnohertzServer",
-                            host: "148.72.215.184",
-                            user: "technohertz",     // ← FIXED
-                            password: SSH_PASS,       // password from credentials
-                            allowAnyHosts: true
-                        ], command: """
-                            set -e
-                            echo "Running deploy_demo.sh on server..."
-                            bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps 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
-                        """
-                    }
-                }
+        stage('Deploy WAR on Server') {
+            steps {
+                sshCommand remote: [
+                    name: "TechnohertzServer",
+                    host: "148.72.215.184",
+                    user: "technohertz",
+                    credentialsId: "technohertz-creds",
+                    allowAnyHosts: true
+                ], command: """
+                    set -e
+                    echo "Running deploy_demo.sh on server..."
+                    bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps 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
+                """
             }
         }
     }
