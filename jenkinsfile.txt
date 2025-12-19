@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Build WAR on Server') {
+        stage('Deploy WAR on Server') {
             steps {
                 withCredentials([
                     usernamePassword(
@@ -17,7 +17,7 @@ pipeline {
                     )
                 ]) {
                     script {
-                        echo "Triggering deploy_demo.sh on Technohertz server..."
+                        echo "Starting remote deployment..."
 
                         sshCommand remote: [
                             name: "TechnohertzServer",
@@ -27,7 +27,6 @@ pipeline {
                             allowAnyHosts: true
                         ], command: """
                             set -e
-                            echo "Running deploy_demo.sh on server..."
                             bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps "$GIT_USER" "$GIT_TOKEN"
                         """
                     }
@@ -38,11 +37,12 @@ pipeline {
 
     post {
         success {
-            echo "WAR build & copy finished on server."
+            echo "Deployment completed successfully."
         }
         failure {
-            echo "WAR build FAILED — check server logs."
+            echo "Deployment failed. Check server logs."
         }
     }
 }
+
 
