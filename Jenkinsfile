@@ -20,7 +20,7 @@ pipeline {
             steps {
                 echo "Deploying WAR on Technohertz server..."
 
-                sshagent(credentials: ['technohertz-ssh']) {
+                sshagent(credentials: ['technohertz-creds']) {
                     bat """
                     ssh -o StrictHostKeyChecking=no %SERVER_USER%@%SERVER_IP% ^
                     "chmod +x %DEPLOY_SCRIPT% && %DEPLOY_SCRIPT% %REPO_NAME%"
