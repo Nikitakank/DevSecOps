@@ -25,7 +25,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no technohertz@148.72.215.184 "
                             set -e
                             chmod +x /home/technohertz/War/Demo/deploy_demo.sh
-                            /home/technohertz/War/Demo/deploy_demo.sh DevSecOps
+                            /home/technohertz/War/Demo/deploy_demo.sh 
                         "
                     '''
                 }
