@@ -8,10 +8,10 @@ pipeline {
     stages {
         stage('Trigger Deployment on Server') {
             steps {
-                echo 'Triggering deployment on server (non-interactive)...'
+                echo 'Triggering deployment on Technohertz server...'
 
                 bat '''
-                ssh -o BatchMode=yes -o ConnectTimeout=15 technohertz@148.72.215.184 ^
+                ssh -o BatchMode=yes -o StrictHostKeyChecking=no technohertz@148.72.215.184 ^
                 "cd /home/technohertz/War/Demo && chmod +x deploy_demo.sh && ./deploy_demo.sh"
                 '''
             }
@@ -20,10 +20,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment completed successfully'
+            echo 'WAR deployment completed successfully'
         }
         failure {
-            echo 'Deployment failed or SSH authentication blocked'
+            echo 'WAR deployment failed — SSH authentication issue'
         }
     }
 }
