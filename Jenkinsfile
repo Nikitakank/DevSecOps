@@ -4,39 +4,25 @@ pipeline {
     environment {
         GIT_CREDENTIALS = 'git-creds'
         SERVER_CREDENTIALS = 'technohertz-creds'
-        SERVER_USER = 'technohertz'      
-        SERVER_HOST = '148.72.215.184' 
-        REMOTE_DIR = '/home/technohertz/War/Demo' 
+        SERVER_USER = 'technohertz'                    // your server username
+        SERVER_HOST = '148.72.215.184'         // your server IP
+        REMOTE_DIR = '/home/technohertz/War/Demo'     // directory where code & deploy script exist
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', credentialsId: "${GIT_CREDENTIALS}", url: 'https://github.com/Nikitakank/DevSecOps'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean package -DskipTests'
-            }
-        }
-
-        stage('Deploy to Server') {
+        stage('Update & Deploy on Server') {
             steps {
                 sshagent(['technohertz-creds']) {
+                    // Run all actions directly on server
                     sh """
-                    scp target/*.war ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
-                    scp -r * ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
+                    ssh ${SERVER_USER}@${SERVER_HOST} '
+                        cd ${REMOTE_DIR} &&
+                        git reset --hard &&
+                        git clean -fd &&
+                        git pull origin main &&
+                        bash deploy_demo.sh
+                    '
                     """
-                }
-            }
-        }
-
-        stage('Restart Server (Optional)') {
-            steps {
-                sshagent(['technohertz-creds']) {
-                    sh "ssh ${SERVER_USER}@${SERVER_HOST} 'bash ${REMOTE_DIR}/deploy_demo.sh'"
                 }
             }
         }
