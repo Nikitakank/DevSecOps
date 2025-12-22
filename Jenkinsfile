@@ -2,8 +2,10 @@ pipeline {
     agent any
 
     environment {
-        REPO_NAME = "DevSecOps"
+        SERVER_IP     = "148.72.215.184"
+        SERVER_USER   = "technohertz"
         DEPLOY_SCRIPT = "/home/technohertz/War/Demo/deploy_demo.sh"
+        REPO_NAME     = "DevSecOps"
     }
 
     stages {
@@ -14,30 +16,15 @@ pipeline {
             }
         }
 
-        stage('Deploy WAR on Technohertz Server') {
+        stage('Deploy WAR on Server') {
             steps {
-                echo "Deploying WAR on remote server..."
+                echo "Deploying WAR on Technohertz server..."
 
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'git-creds',
-                        usernameVariable: 'GIT_USER',
-                        passwordVariable: 'GIT_TOKEN'
-                    )
-                ]) {
-                    sshCommand(
-                        remote: [
-                            name: 'TechnohertzServer',
-                            host: '148.72.215.184',
-                            user: 'technohertz',
-                            password: env.GIT_TOKEN,
-                            allowAnyHosts: true
-                        ],
-                        command: """
-                            chmod +x ${DEPLOY_SCRIPT}
-                            ${DEPLOY_SCRIPT} ${REPO_NAME}
-                        """
-                    )
+                sshagent(credentials: ['technohertz-ssh']) {
+                    bat """
+                    ssh -o StrictHostKeyChecking=no %SERVER_USER%@%SERVER_IP% ^
+                    "chmod +x %DEPLOY_SCRIPT% && %DEPLOY_SCRIPT% %REPO_NAME%"
+                    """
                 }
             }
         }
@@ -48,7 +35,7 @@ pipeline {
             echo "WAR deployment SUCCESSFUL"
         }
         failure {
-            echo "WAR deployment FAILED  — check deploy_demo.sh logs on server"
+            echo "WAR deployment FAILED— check server logs"
         }
     }
 }
