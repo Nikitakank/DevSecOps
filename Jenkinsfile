@@ -1,17 +1,18 @@
 pipeline {
     agent any
 
-    stages {
+    options {
+        timeout(time: 5, unit: 'MINUTES')
+    }
 
+    stages {
         stage('Trigger Deployment on Server') {
             steps {
-                echo 'Triggering deployment ONLY on server...'
+                echo 'Triggering deployment on server (non-interactive)...'
 
                 bat '''
-                ssh -o StrictHostKeyChecking=no technohertz@148.72.215.184 ^
-                "cd /home/technohertz/War/Demo && \
-                 chmod +x deploy_demo.sh && \
-                 ./deploy_demo.sh"
+                ssh -o BatchMode=yes -o ConnectTimeout=15 technohertz@148.72.215.184 ^
+                "cd /home/technohertz/War/Demo && chmod +x deploy_demo.sh && ./deploy_demo.sh"
                 '''
             }
         }
@@ -19,10 +20,10 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment triggered successfully on server'
+            echo 'Deployment completed successfully'
         }
         failure {
-            echo 'Deployment failed — check deploy_demo.sh logs on server'
+            echo 'Deployment failed or SSH authentication blocked'
         }
     }
 }
