@@ -13,7 +13,7 @@ pipeline {
         stage('Trigger Deployment on Server') {
             steps {
                 echo "Triggering deployment on Linux server..."
-                sshagent(['technohertz-server-cred']) { 
+                sshagent(['technohertz-creds']) { 
                     sh """
                         ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} \\
                         "cd /home/technohertz/War/Demo && \\
