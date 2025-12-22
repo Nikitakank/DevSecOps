@@ -20,15 +20,13 @@ pipeline {
             steps {
                 echo 'Deploying WAR on Technohertz server...'
 
-                sshagent(credentials: ['technohertz-creds']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no technohertz@148.72.215.184 "
-                            set -e
-                            chmod +x /home/technohertz/War/Demo/deploy_demo.sh
-                            /home/technohertz/War/Demo/deploy_demo.sh DevSecOps
-                        "
-                    '''
-                }
+                sh '''
+                ssh -o StrictHostKeyChecking=no technohertz@148.72.215.184 << 'EOF'
+                    set -e
+                    chmod +x /home/technohertz/War/Demo/deploy_demo.sh
+                    /home/technohertz/War/Demo/deploy_demo.sh DevSecOps
+                EOF
+                '''
             }
         }
     }
