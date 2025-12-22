@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
-                        configName: 'technohertz-creds',
+                        configName: 'technohertz-creds',   // must match the server config name
                         transfers: [
                             sshTransfer(
                                 sourceFiles: '',
