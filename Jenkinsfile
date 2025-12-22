@@ -4,7 +4,7 @@ pipeline {
     environment {
         SERVER_USER = 'technohertz'
         SERVER_IP   = '148.72.215.184'
-        GIT_TOKEN   = credentials('git-creds') // Store your GitHub token in Jenkins credentials   
+        GIT_TOKEN   = credentials('git-creds') // GitHub token
         REPO_NAME   = 'DevSecOps'
         REPO_USER   = 'nikitakank'
     }
@@ -13,11 +13,16 @@ pipeline {
         stage('Trigger Deployment on Server') {
             steps {
                 echo "Triggering deployment on Linux server..."
-                sshagent(['technohertz-creds']) { 
+                
+                // Use username/password credentials
+                withCredentials([usernamePassword(credentialsId: 'technohertz-creds', 
+                                 usernameVariable: 'SSH_USER', 
+                                 passwordVariable: 'SSH_PASS')]) {
+                    
+                    // Run deployment on server using sshpass
                     sh """
-                        ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} \\
-                        "cd /home/technohertz/War/Demo && \\
-                        bash deploy_demo.sh ${REPO_NAME} ${REPO_USER} ${GIT_TOKEN}"
+                        sshpass -p "$SSH_PASS" ssh -o StrictHostKeyChecking=no $SSH_USER@${SERVER_IP} \\
+                        "cd /home/technohertz/War/Demo && bash deploy_demo.sh ${REPO_NAME} ${REPO_USER} ${GIT_TOKEN}"
                     """
                 }
             }
