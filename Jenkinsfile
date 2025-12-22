@@ -3,17 +3,15 @@ pipeline {
 
     environment {
         SERVER_HOST = "148.72.215.184"
-        SSH_CRED    = "technohertz-creds"   // SSH key for server
-        GIT_CRED    = "git-creds"           // GitHub PAT credential
+        SSH_CRED    = "technohertz-creds"
+        GIT_CRED    = "git-creds"
         REPO_NAME   = "DevSecOps"
-        GIT_USER    = "nikitakank"
     }
 
     stages {
 
         stage('Checkout Source Code') {
             steps {
-                echo "Checking out code from GitHub..."
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
@@ -30,7 +28,11 @@ pipeline {
                 echo "Deploying WAR on remote server..."
 
                 withCredentials([
-                    string(credentialsId: 'git-creds', variable: 'GIT_TOKEN')
+                    usernamePassword(
+                        credentialsId: 'git-creds',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_TOKEN'
+                    )
                 ]) {
                     sshCommand remote: [
                         name: "TechnohertzServer",
@@ -40,7 +42,7 @@ pipeline {
                         allowAnyHosts: true
                     ], command: """
                         bash /home/technohertz/War/Demo/deploy_demo.sh \
-                        ${REPO_NAME} \
+                        DevSecOps \
                         ${GIT_USER} \
                         ${GIT_TOKEN}
                     """
@@ -51,10 +53,10 @@ pipeline {
 
     post {
         success {
-            echo " WAR deployment SUCCESSFUL"
+            echo "WAR deployment SUCCESSFUL"
         }
         failure {
-            echo " WAR deployment FAILED — check deploy_demo.sh logs on server"
+            echo "WAR deployment FAILED — check deploy_demo.sh logs on server"
         }
     }
 }
