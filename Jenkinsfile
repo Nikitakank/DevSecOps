@@ -6,7 +6,7 @@ pipeline {
             steps {
                 sshPublisher(publishers: [
                     sshPublisherDesc(
-                        configName: 'technohertz-creds',   
+                        configName: 'technohertz-creds',
                         transfers: [
                             sshTransfer(
                                 sourceFiles: '',
@@ -15,13 +15,10 @@ pipeline {
                                     git reset --hard &&
                                     git clean -fd &&
                                     git pull origin main &&
-                                    bash deploy_demo.sh nikitakank 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
-                                """,
-                                removePrefix: '',
-                                remoteDirectory: '/home/technohertz/War/Demo'
+                                    bash deploy_demo.sh
+                                """
                             )
                         ],
-                        usePromotionTimestamp: false,
                         verbose: true
                     )
                 ])
@@ -30,11 +27,7 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Deployment Successful!'
-        }
-        failure {
-            echo 'Deployment Failed!'
-        }
+        success { echo 'Deployment Successful!' }
+        failure { echo 'Deployment Failed!' }
     }
 }
