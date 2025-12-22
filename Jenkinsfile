@@ -2,52 +2,59 @@ pipeline {
     agent any
 
     environment {
-        SERVER_HOST = "148.72.215.184"               // Your server IP
-        SSH_CRED = "technohertz-creds"              // SSH credential for server
-        GIT_CRED = "git-creds"                      // Git credential for GitHub
-        REPO_URL = "https://github.com/Nikitakank/DevSecOps"
-        BRANCH = "main"
+        SERVER_HOST = "148.72.215.184"
+        SSH_CRED    = "technohertz-creds"   // SSH key for server
+        GIT_CRED    = "git-creds"           // GitHub PAT credential
+        REPO_NAME   = "DevSecOps"
+        GIT_USER    = "nikitakank"
     }
 
     stages {
-        stage('Checkout SCM') {
+
+        stage('Checkout Source Code') {
             steps {
                 echo "Checking out code from GitHub..."
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: "*/${BRANCH}"]],
+                    branches: [[name: '*/main']],
                     userRemoteConfigs: [[
-                        url: "${REPO_URL}",
-                        credentialsId: "${GIT_CRED}"   // <-- Git credential here
+                        url: 'https://github.com/Nikitakank/DevSecOps.git',
+                        credentialsId: "${GIT_CRED}"
                     ]]
                 ])
             }
         }
 
-        stage('Deploy WAR on Server') {
+        stage('Deploy WAR on Technohertz Server') {
             steps {
-                echo "Triggering deploy_demo.sh on Technohertz server..."
-                sshCommand remote: [
-                    name: "TechnohertzServer",       // Required by SSH plugin
-                    host: "${SERVER_HOST}",
-                    user: "technohertz",             // SSH username
-                    credentialsId: "${SSH_CRED}",    // SSH credential here
-                    allowAnyHosts: true
-                ], command: """
-                    set -e
-                    echo "Running deploy_demo.sh on server..."
-                    bash /home/technohertz/War/Demo/deploy_demo.sh DevSecOps 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
-                """
+                echo "Deploying WAR on remote server..."
+
+                withCredentials([
+                    string(credentialsId: 'git-creds', variable: 'GIT_TOKEN')
+                ]) {
+                    sshCommand remote: [
+                        name: "TechnohertzServer",
+                        host: "${SERVER_HOST}",
+                        user: "technohertz",
+                        credentialsId: "${SSH_CRED}",
+                        allowAnyHosts: true
+                    ], command: """
+                        bash /home/technohertz/War/Demo/deploy_demo.sh \
+                        ${REPO_NAME} \
+                        ${GIT_USER} \
+                        ${GIT_TOKEN}
+                    """
+                }
             }
         }
     }
 
     post {
         success {
-            echo "WAR deployment SUCCESSFUL!"
+            echo " WAR deployment SUCCESSFUL"
         }
         failure {
-            echo "WAR deployment FAILED — check server logs."
+            echo " WAR deployment FAILED — check deploy_demo.sh logs on server"
         }
     }
 }
